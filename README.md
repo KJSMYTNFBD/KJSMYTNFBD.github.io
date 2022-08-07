@@ -1,6 +1,6 @@
 <html><head>
 <meta charset="utf-8">
-<title>text</title>
+<title>鯊魚圖書館</title>
 <style>
 body {
 	background: #000;
