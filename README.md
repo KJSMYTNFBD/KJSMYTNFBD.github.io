@@ -1,6 +1,6 @@
 <html><head>
 <meta charset="utf-8">
-<title>电流变形效果</title>
+<title></title>
 <style>
 body {
 	background: #000;
