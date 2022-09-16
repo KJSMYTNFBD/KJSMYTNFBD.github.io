@@ -946,7 +946,7 @@ window.onresize = function(){
   renderer.setSize( w, h );
 }
 
-cameraSpeed = 3;
+cameraSpeed = .003000;
 lightSpeed = .001;
 tubularSegments = 1000;
 radialSegments = 360;
