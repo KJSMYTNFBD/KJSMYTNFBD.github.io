@@ -1,9 +1,7 @@
-<!DOCTYPE>
 <html lang="zh-TW">
     <head>
         <meta charset="UTF-8">
         <style>
-            /* Main styles */
             @import url(http://fonts.googleapis.com/css?family=Open+Sans:800);
 
             .text {
