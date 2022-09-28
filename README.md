@@ -946,10 +946,10 @@ window.onresize = function(){
   renderer.setSize( w, h );
 }
 
-cameraSpeed = .003000;
-lightSpeed = .001;
+cameraSpeed = .0000300;
+lightSpeed = .0005;
 tubularSegments = 1000;
-radialSegments = 360;
+radialSegments = 5;
 tubeRadius = 2;
 lightColor = 0xffffff;
 lightIntensity = 1;
