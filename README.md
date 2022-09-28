@@ -1,6 +1,7 @@
 <html lang="zh-TW">
     <head>
         <meta charset="UTF-8">
+        <title>教師節</title>
         <style>
             @import url(http://fonts.googleapis.com/css?family=Open+Sans:800);
 
