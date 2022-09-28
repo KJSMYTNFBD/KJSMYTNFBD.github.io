@@ -77,12 +77,12 @@ svg {
 }
         </style>
         <body>
-            <svg viewBox="0 0 600 300">
+            <svg viewBox="0 0 1200 600">
 
                 <!-- Symbol -->
                 <symbol id="s-text">
                   <text text-anchor="middle"
-                        x="50%" y="50%" dy=".35em">
+                        x="50%" y="50%" dy=".05em">
                     教師節快樂
                   </text>
                 </symbol>  
