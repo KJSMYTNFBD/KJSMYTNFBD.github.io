@@ -1,194 +1,201 @@
-<html><head>
-<meta charset="utf-8">
-<title>电流变形效果</title>
-<style>
-body {
-	background: #000;
-	overflow: hidden;
-}
-
-canvas {
-	display: block;
-}
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <title>Document</title>
 </head>
-
 <body>
-<canvas id="canvas" width="1920" height="572"></canvas>
-<script>
-var canvas,
-	ctx,
-	width,
-	height,
-	size,
-	lines,
-	tick;
+    <h1>貪吃蛇</h1>
+    <canvas id = "game" width="400" height="400"></canvas>
+		<h2>使用上下左右來控制！</h2>
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        class SnakePart{
+            constructor(x, y){
+                this.x = x;
+                this.y = y;
+            }
+        }
+        let speed = 8;
 
-function line() {
-	this.path = [];
-	this.speed = rand(10, 20);
-	this.count = randInt(10, 30);
-	this.x = width / 2, +1;
-	this.y = height / 2 + 1;
-	this.target = {
-		x: width / 2,
-		y: height / 2
-	};
-	this.dist = 0;
-	this.angle = 0;
-	this.hue = tick / 5;
-	this.life = 1;
-	this.updateAngle();
-	this.updateDist();
-}
+        let tileCount = 20;
+        let tileSize = canvas.width / tileCount - 2;
+        let headX = 10;
+        let headY = 10;
+        const snakePart = [];
+        let tailLen = 0;
 
-line.prototype.step = function(i) {
-	this.x += Math.cos(this.angle) * this.speed;
-	this.y += Math.sin(this.angle) * this.speed;
+        let appleX = 5;
+        let appleY = 5;
 
-	this.updateDist();
+        let xV = 0;
+        let yV = 0;
 
-	if (this.dist < this.speed) {
-		this.x = this.target.x;
-		this.y = this.target.y;
-		this.changeTarget();
-	}
+        let score = 0;
+        function setSpeed() {
+            if(score == 5){
+                speed = 10;
+            }    
+        }
+        function drawScore() {
+            ctx.fillStyle = "red";
+            ctx.font = "40px Poppins";
+            ctx.fillText("Score: " + score, canvas.width-400, 34);
+        }
+        function drawSnake() {
+            
+            ctx.fillStyle = "green";
+            for(let i = 0; i< snakePart.length; i++){
+                let part = snakePart[i];
+                ctx.fillRect(part.x * tileCount, part.y * tileCount, tileSize, tileSize);
+            }
 
-	this.path.push({
-		x: this.x,
-		y: this.y
-	});
-	if (this.path.length > this.count) {
-		this.path.shift();
-	}
+            snakePart.push( new SnakePart(headX, headY));
+            if(snakePart.length > tailLen){
+                snakePart.shift();
+            }
 
-	this.life -= 0.001;
+            ctx.fillStyle = 'orange';
+            ctx.fillRect(headX * tileCount, headY *tileCount, tileSize, tileSize);
+        }
+        function drawApple() {
+            ctx.fillStyle = "red";
+            ctx.fillRect(appleX * tileCount, appleY * tileCount, tileSize, tileSize);
+        }
+        function isWin() {
+            let win = false;
+            if(score == 500){
+                win = true;
+            }
+            if(win){
+                ctx.fillStyle = "white";
+                ctx.font = "50px Poppins";
+                ctx.fillText("你贏了!", canvas.width/3.3, canvas.height /2)
+            }
+            return win;
+        }
+        function checkColli() {
+            if(appleX === headX && appleY === headY){
+                appleX = Math.floor(Math.random() * tileCount);
+                appleY = Math.floor(Math.random() * tileCount);
+                tailLen ++;
+                score ++;
+                if(score > 5 && score % 2 == 0){
+                    speed ++;
+                }
+            }
+        }
+        function clearScreen() {
+            ctx.fillStyle= 'black';
+            ctx.fillRect(0, 0, 400, 400);
+        }
+        function playAgain(event) {
+            if(event.keyCode == 32){
+                location.reload();
+            }
+        }
+        function isOver() {
+            let Over = false;
+            if(headX < 0 || headX == 20 || headY < 0 || headY == 20){
+                Over = true;
+            }
+            for(let i = 0; i < snakePart.length; i++){
+                if(headX == snakePart[i].x && headY == snakePart[i].y){
+                    Over = true;
+                }
+            }
+            if(Over){
+                ctx.fillStyle = "white";
+                ctx.font = "50px Poppins";
+                ctx.fillText("Game Over!", canvas.width/6.5, canvas.height /2);
+                ctx.font = "40px Poppins";
+                ctx.fillText("再玩一次?", canvas.width/3.5, canvas.height /2 + 50 );
+                ctx.font = "25px Poppins";
+                ctx.fillText("按空白鍵", canvas.width/2.7, canvas.height /2 +100 );
+            }
+            return Over;
+        }
+        function snakePosition() {
+            headX = headX + xV;
+            headY = headY + yV;
+        }
+        function startGame() {
+            snakePosition();
+            let lose = isOver();
+            if(lose){
+                document.body.addEventListener('keydown', playAgain);
+                return;
+            }
+            clearScreen();
 
-	if (this.life <= 0) {
-		this.path = null;
-		lines.splice(i, 1);
-	}
-};
+            checkColli();
+            let win = isWin();
+            if(win){
+                return;
+            }
+            drawApple();
+            drawSnake();
+            drawScore();
+            
+            setSpeed();
+            
+            setTimeout(startGame, 1000/speed);
+        }
+        document.body.addEventListener('keydown', keyDown);
 
-line.prototype.updateDist = function() {
-	var dx = this.target.x - this.x,
-		dy = this.target.y - this.y;
-	this.dist = Math.sqrt(dx * dx + dy * dy);
-}
+        function keyDown(event) {
 
-line.prototype.updateAngle = function() {
-	var dx = this.target.x - this.x,
-		dy = this.target.y - this.y;
-	this.angle = Math.atan2(dy, dx);
-}
+            //go up
+            if(event.keyCode== 38){
+                if(yV == 1) 
+                    return;
+                yV = -1;
+                xV = 0;
+            }
 
-line.prototype.changeTarget = function() {
-	var randStart = randInt(0, 3);
-	switch (randStart) {
-		case 0: // up
-			this.target.y = this.y - size;
-			break;
-		case 1: // right
-			this.target.x = this.x + size;
-			break;
-		case 2: // down
-			this.target.y = this.y + size;
-			break;
-		case 3: // left
-			this.target.x = this.x - size;
-	}
-	this.updateAngle();
-};
+            //go down
+            if(event.keyCode == 40){
+                if(yV == -1) 
+                    return;
+                yV = 1;
+                xV = 0;
+            }
 
-line.prototype.draw = function(i) {
-	ctx.beginPath();
-	var rando = rand(0, 10);
-	for (var j = 0, length = this.path.length; j < length; j++) {
-		ctx[(j === 0) ? 'moveTo' : 'lineTo'](this.path[j].x + rand(-rando, rando), this.path[j].y + rand(-rando, rando));
-	}
-	ctx.strokeStyle = 'hsla(' + rand(this.hue, this.hue + 30) + ', 80%, 55%, ' + (this.life / 3) + ')';
-	ctx.lineWidth = rand(0.1, 2);
-	ctx.stroke();
-};
+            //go left
+            if(event.keyCode == 37){
+                if(xV == 1) 
+                    return;
+                yV = 0;
+                xV = -1;
+            }
 
-function rand(min, max) {
-	return Math.random() * (max - min) + min;
-}
-
-function randInt(min, max) {
-	return Math.floor(min + Math.random() * (max - min + 1));
-};
-
-function init() {
-	canvas = document.getElementById('canvas');
-	ctx = canvas.getContext('2d');
-	size = 30;
-	lines = [];
-	reset();
-	loop();
-}
-
-function reset() {
-	width = Math.ceil(window.innerWidth / 2) * 2;
-	height = Math.ceil(window.innerHeight / 2) * 2;
-	tick = 0;
-
-	lines.length = 0;
-	canvas.width = width;
-	canvas.height = height;
-}
-
-function create() {
-	if (tick % 10 === 0) {
-		lines.push(new line());
-	}
-}
-
-function step() {
-	var i = lines.length;
-	while (i--) {
-		lines[i].step(i);
-	}
-}
-
-function clear() {
-	ctx.globalCompositeOperation = 'destination-out';
-	ctx.fillStyle = 'hsla(0, 0%, 0%, 0.1';
-	ctx.fillRect(0, 0, width, height);
-	ctx.globalCompositeOperation = 'lighter';
-}
-
-function draw() {
-	ctx.save();
-	ctx.translate(width / 2, height / 2);
-	ctx.rotate(tick * 0.001);
-	var scale = 0.8 + Math.cos(tick * 0.02) * 0.2;
-	ctx.scale(scale, scale);
-	ctx.translate(-width / 2, -height / 2);
-	var i = lines.length;
-	while (i--) {
-		lines[i].draw(i);
-	}
-	ctx.restore();
-}
-
-function loop() {
-	requestAnimationFrame(loop);
-	create();
-	step();
-	clear();
-	draw();
-	tick++;
-}
-
-function onresize() {
-	reset();
-}
-
-window.addEventListener('resize', onresize);
-
-init();
-</script>
-
-
-</body></html>
+            //go right
+            if(event.keyCode == 39){
+                if(xV == -1) 
+                    return;
+                yV = 0;
+                xV = 1;
+            }
+        }
+        function playAgain(event) {
+            if(event.keyCode == 32){
+                location.reload();
+            }
+        }
+        startGame();
+    </script>
+</body>
+</html>
